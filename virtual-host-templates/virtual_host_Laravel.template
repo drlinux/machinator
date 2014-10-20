@@ -1,0 +1,79 @@
+server {
+
+    listen 80;
+
+    server_name www.DOMAIN DOMAIN;
+
+    root ROOT/public;
+
+    access_log /var/log/nginx/DOMAIN.access.log;
+
+    index index.php index.html index.htm;
+
+	# serve static files directly
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+	
+    location ~* \.(jpg|jpeg|gif|css|png|js|ico|html)$ {
+        access_log off;
+        expires max;
+    }
+
+	## Allow admins only to view export directory
+	## Set up the password for any username using this command:
+	## htpasswd -c /etc/nginx/htpasswd laraveladmin
+    location /var/export/ { 
+        auth_basic           "Restricted";
+        auth_basic_user_file htpasswd; ## Defined at /etc/nginx/htpassword
+		autoindex            on;
+    }
+
+	## Disable .htaccess and other hidden files
+    location ~ /\. { 
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+	## Laravel uses a common front handler 
+    location @handler { 
+        rewrite / /index.php;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+	## Forward paths like /js/index.php/x.js to relevant handler
+    location ~ .php/ { 
+        rewrite ^(.*.php)/ $1 last;
+    }
+
+    location ~ [^/]\.php(/|$) {
+	
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+		
+        if (!-f $document_root$fastcgi_script_name) {
+            return 404;
+        }
+
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+
+		## Tweak fastcgi buffers, change if you need.
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 256 4k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+    }
+}
+

@@ -1,0 +1,94 @@
+server {
+
+    listen 80;
+
+    server_name www.DOMAIN DOMAIN;
+
+    root ROOT;
+
+    access_log /var/log/nginx/DOMAIN.access.log;
+
+    index index.php index.html index.htm;
+
+	# serve static files directly
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+	
+    location ~* \.(jpg|jpeg|gif|css|png|js|ico|html)$ {
+        access_log off;
+        expires max;
+    }
+
+    location ^~ /app/                { deny all; }
+    location ^~ /includes/           { deny all; }
+    location ^~ /lib/                { deny all; }
+    location ^~ /media/downloadable/ { deny all; }
+    location ^~ /pkginfo/            { deny all; }
+    location ^~ /report/config.xml   { deny all; }
+    location ^~ /var/                { deny all; }
+
+	## Allow admins only to view export directory
+	## Set up the password for any username using this command:
+	## htpasswd -c /etc/nginx/htpasswd wordpressadmin
+    location /var/export/ { 
+        auth_basic           "Restricted";
+        auth_basic_user_file htpasswd; ## Defined at /etc/nginx/htpassword
+		autoindex            on;
+    }
+
+	## Disable .htaccess and other hidden files
+    location ~ /\. { 
+        deny all;
+        access_log off;
+        log_not_found off;
+
+    }
+
+	## WordPress uses a common front handler 
+    location @handler { 
+        rewrite / /index.php;
+    }
+
+	## Forward paths like /js/index.php/x.js to relevant handler
+    location ~ .php/ { 
+        rewrite ^(.*.php)/ $1 last;
+    }
+    
+    location / {
+        try_files $uri $uri/ /index.php?q=$uri&$args;
+    }
+
+    location ~ \.php$ {
+	
+        set $nocache "";
+        if ($http_cookie ~ (comment_author_.*|wordpress_logged_in.*|wp-postpass_.*)) {
+            set $nocache "Y";
+        }
+
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME ROOT$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+        include fastcgi_params;
+
+        fastcgi_cache_use_stale error timeout invalid_header http_500;
+        fastcgi_cache_key $host$request_uri;
+        fastcgi_cache_valid 200 1m;
+        fastcgi_cache_bypass $nocache;
+        fastcgi_no_cache $nocache;
+
+		## Tweak fastcgi buffers, change if you need.
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 256 4k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+    }
+}
