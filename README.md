@@ -6,7 +6,7 @@ Currently supporting Magento, Prestashop, Laravel and Wordpress projects. The pr
 
 ##How to install?
 
-This script assumes that you've already docker.io installed on your host. If you've already intalled, than:
+This script assumes that you've already [docker.io](http://docker.io) installed on your host. If you've already installed, than:
 
 $ cd reverse-proxy/ && sudo ./build.sh
 
@@ -23,8 +23,11 @@ Just give rhe following command under shell:
 $ cd reverse-proxy/ && sudo ./add_new_host.sh mydevelopment.dev mydev
 
 The script will ask you some questions, just follow the "white rabbit"!
+
 The script is also able to clone SVN and Git based projects.
+
 After all the script creates a mysql database and user on mysql-container.
 
+Will be documented soon.
 
 Any pull request more than welcome!
