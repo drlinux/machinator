@@ -1,8 +1,8 @@
 Machinator
 ======
 
-Machinator is a bash tool for easily creating docker.io based containers with LEMP stack. There are two main contain ers that managing to full structure. Firts of them is nginx-reverse-proxy container, second of them is mysql-container.
-Currently supporting Magento, Prestashop, Laravel and Wordpress projects. mynxer also able to clone your projects from any Git or SVN repository.
+Machinator is a bash tool for easily creating docker.io based containers with LEMP stack. There are two main containers that manages to the full structure. Firts of them is nginx-reverse-proxy container, second of them is mysql-container.
+Currently supporting Magento, Prestashop, Laravel and Wordpress projects. The project still in **beta and not production-ready**.
 
 ##How to install?
 
@@ -23,7 +23,6 @@ Just give rhe following command under shell:
 $ cd reverse-proxy/ && sudo ./add_new_host.sh mydevelopment.dev mydev
 
 The script will ask you some questions, just follow the "white rabbit"!
-Currently supporting Magento, PrestaShop, Laravel, and Wordpress projects.
 The script is also able to clone SVN and Git based projects.
 After all the script creates a mysql database and user on mysql-container.
 
