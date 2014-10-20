@@ -10,12 +10,15 @@ This script assumes that you've already docker.io installed on your host. If you
 
 $ cd reverse-proxy/ && sudo ./build.sh
 
-# Now we need to install MySQL container.
+Now we need to install MySQL container.
+
 
 $ cd mysql-server/ && sudo ./build.sh
 
 
-Now we ready to create our first container image :
+##How to create a container?
+
+Just give rhe following command under shell:
 
 $ cd reverse-proxy/ && sudo ./add_new_host.sh mydevelopment.dev mydev
 
