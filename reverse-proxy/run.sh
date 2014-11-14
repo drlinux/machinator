@@ -4,6 +4,6 @@ clear
 
 docker rm -f "machinator-reverse-proxy" > /dev/null
 
-/usr/bin/docker run -i -d --name="machinator-reverse-proxy" -p 80 -t "machinator/nginx-reverse-proxy" > /dev/null
+/usr/bin/docker run -i -d --name="machinator-reverse-proxy" -p 80:80 -t "machinator/nginx-reverse-proxy" > /dev/null
 
 echo "Congrats! Reverse Proxy Container Successfully Started!";
